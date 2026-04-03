@@ -8,6 +8,8 @@ import numpy as np
 import pickle
 import json
 import os
+import boto3
+from botocore.exceptions import NoCredentialsError
 from warnings import filterwarnings
 filterwarnings("ignore")
 
@@ -18,14 +20,70 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 # ─────────────────────────────────────────────
+# LOAD DATASET — from AWS S3 or local fallback
+# ─────────────────────────────────────────────
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def download_from_s3():
+    """Download insurance.csv from AWS S3 bucket."""
+    try:
+        print("Attempting to download insurance.csv from AWS S3...")
+
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id     = os.getenv('AWS_ACCESS_KEY'),
+            aws_secret_access_key = os.getenv('AWS_SECRET_KEY'),
+            region_name           = os.getenv('AWS_REGION', 'ap-southeast-1')
+        )
+
+        bucket_name = os.getenv('S3_BUCKET_NAME')   # from environment variable
+        s3_file_key = 'insurance.csv'                # filename inside your S3 bucket
+        local_path  = os.path.join(BASE_DIR, 'insurance.csv')
+
+        s3.download_file(bucket_name, s3_file_key, local_path)
+        print(f"Downloaded insurance.csv from S3 bucket: {bucket_name}")
+        return local_path
+
+    except NoCredentialsError:
+        print("AWS credentials not found.")
+        return None
+    except Exception as e:
+        print(f"S3 download failed: {e}")
+        return None
+
+
+def load_dataset():
+    """
+    Try S3 first. If credentials are missing or download fails,
+    fall back to local file. This means the code works both
+    locally (no AWS needed) and on Render (uses S3).
+    """
+    local_path = os.path.join(BASE_DIR, 'insurance.csv')
+
+    # If AWS credentials are set, try S3
+    if os.getenv('AWS_ACCESS_KEY') and os.getenv('S3_BUCKET_NAME'):
+        s3_path = download_from_s3()
+        if s3_path:
+            return pd.read_csv(s3_path)
+
+    # Fallback: use local file
+    if os.path.exists(local_path):
+        print("Loading insurance.csv from local file...")
+        return pd.read_csv(local_path)
+
+    raise FileNotFoundError(
+        "insurance.csv not found locally and S3 download failed. "
+        "Set AWS_ACCESS_KEY, AWS_SECRET_KEY, S3_BUCKET_NAME environment variables."
+    )
+
+# ─────────────────────────────────────────────
 # 1. LOAD & PREPROCESS DATA
 # ─────────────────────────────────────────────
 print("=" * 50)
 print("STEP 1: Loading and preprocessing data...")
 print("=" * 50)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-df = pd.read_csv(os.path.join(BASE_DIR, "insurance.csv"))
+df = load_dataset()
 print(f"Dataset shape: {df.shape}")
 
 # Drop duplicates
