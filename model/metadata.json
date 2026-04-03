@@ -1,0 +1,59 @@
+{
+  "best_model_name": "Gradient Boosting",
+  "needs_scaling": false,
+  "test_r2": 0.8544,
+  "cv_r2": 0.7938,
+  "mae_usd": 2560.44,
+  "num_cols": [
+    "age",
+    "bmi",
+    "children"
+  ],
+  "feature_cols": [
+    "age",
+    "bmi",
+    "children",
+    "sex_male",
+    "smoker_yes",
+    "region_northwest",
+    "region_southeast",
+    "region_southwest"
+  ],
+  "all_model_results": [
+    {
+      "name": "Linear Regression",
+      "test_r2": 0.8294600673599883,
+      "cv_r2": 0.7464355640229703,
+      "mae": 3764.0676981317943,
+      "rmse": 0.39785897554065874
+    },
+    {
+      "name": "Ridge Regression",
+      "test_r2": 0.8290760346655403,
+      "cv_r2": 0.7464725916411219,
+      "mae": 3763.1332093683714,
+      "rmse": 0.3983066857416902
+    },
+    {
+      "name": "Lasso Regression",
+      "test_r2": 0.8293511679744776,
+      "cv_r2": 0.7464383348342156,
+      "mae": 3763.5724185650934,
+      "rmse": 0.39798598298950905
+    },
+    {
+      "name": "Random Forest",
+      "test_r2": 0.8439002609933064,
+      "cv_r2": 0.7898869522441845,
+      "mae": 2116.839015001445,
+      "rmse": 0.3806424367657026
+    },
+    {
+      "name": "Gradient Boosting",
+      "test_r2": 0.8544473221824963,
+      "cv_r2": 0.7938049845087776,
+      "mae": 2560.4422663937335,
+      "rmse": 0.3675582849153996
+    }
+  ]
+}
