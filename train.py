@@ -24,7 +24,8 @@ print("=" * 50)
 print("STEP 1: Loading and preprocessing data...")
 print("=" * 50)
 
-df = pd.read_csv("insurance.csv")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+df = pd.read_csv(os.path.join(BASE_DIR, "insurance.csv"))
 print(f"Dataset shape: {df.shape}")
 
 # Drop duplicates
