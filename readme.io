@@ -171,3 +171,8 @@ curl -X POST http://localhost:8000/predict/batch \
 | Gradient Boosting  | Raw data     | 200 estimators, lr=0.05          |
 
 Best model is auto-selected by 5-fold cross-validated R².
+
+## Model Performance
+
+The model predicts insurance charges based on factors such as age,
+BMI, smoking status, number of children, and region.
